@@ -42,7 +42,7 @@ void main() {
 
   group('asset videos', () {
     setUp(() {
-      controller = VideoPlayerController.asset(_videoAssetKey);
+      controller = VideoPlayerController.asset(_videoAssetKey,"");
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {
@@ -61,7 +61,7 @@ void main() {
       (WidgetTester tester) async {
         final VideoPlayerController networkController =
             VideoPlayerController.network(
-          'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8',
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/hls/bee.m3u8',""
         );
         await networkController.initialize();
 
@@ -216,7 +216,7 @@ void main() {
       final File file = File('$tempDir/$filename');
       await file.writeAsBytes(bytes.buffer.asInt8List());
 
-      controller = VideoPlayerController.file(file);
+      controller = VideoPlayerController.file(file,"");
     });
 
     testWidgets('test video player using static file() method as constructor',
@@ -234,7 +234,7 @@ void main() {
   group('network videos', () {
     setUp(() {
       controller = VideoPlayerController.network(
-          getUrlForAssetAsNetworkSource(_videoAssetKey));
+          getUrlForAssetAsNetworkSource(_videoAssetKey),"");
     });
 
     testWidgets(
@@ -277,7 +277,7 @@ void main() {
   // but could be removed in the future.
   group('asset audios', () {
     setUp(() {
-      controller = VideoPlayerController.asset('assets/Audio.mp3');
+      controller = VideoPlayerController.asset('assets/Audio.mp3',"");
     });
 
     testWidgets('can be initialized', (WidgetTester tester) async {

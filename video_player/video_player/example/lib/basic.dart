@@ -24,11 +24,12 @@ class VideoApp extends StatefulWidget {
 class _VideoAppState extends State<VideoApp> {
   late VideoPlayerController _controller;
 
+
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',"")
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});

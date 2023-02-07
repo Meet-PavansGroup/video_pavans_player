@@ -9,6 +9,9 @@ package io.flutter.plugins.videoplayer;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.jetbrains.annotations.Nullable;
+
 import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MessageCodec;
@@ -384,6 +387,12 @@ public class Messages {
     public @Nullable String getAsset() {
       return asset;
     }
+    private @Nullable String drmURL;
+
+    public @Nullable String getDrmURL() {
+      return drmURL;
+    }
+
 
     public void setAsset(@Nullable String setterArg) {
       this.asset = setterArg;
