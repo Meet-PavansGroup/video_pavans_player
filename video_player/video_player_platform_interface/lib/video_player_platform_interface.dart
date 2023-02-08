@@ -125,6 +125,7 @@ class DataSource {
   DataSource({
     required this.sourceType,
     this.uri,
+    this.drmUrl,
     this.formatHint,
     this.asset,
     this.package,
@@ -142,6 +143,7 @@ class DataSource {
   /// This will be in different formats depending on the [DataSourceType] of
   /// the original video.
   final String? uri;
+  final String? drmUrl;
 
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.

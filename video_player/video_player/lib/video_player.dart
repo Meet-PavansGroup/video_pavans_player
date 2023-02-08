@@ -236,7 +236,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   ///
 
-  VideoPlayerController.setDrm( this.drmURL){}
 
   VideoPlayerController.network(
     this.dataSource, this.drmURL, {
