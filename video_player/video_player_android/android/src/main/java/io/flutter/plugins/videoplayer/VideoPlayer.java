@@ -10,8 +10,6 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 import android.content.Context;
 import android.net.Uri;
 import android.view.Surface;
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
@@ -31,7 +29,10 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.common.annotations.VisibleForTesting;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
@@ -66,6 +68,7 @@ final class VideoPlayer {
       TextureRegistry.SurfaceTextureEntry textureEntry,
       String dataSource,
       String formatHint,
+      String drmURL,
       @NonNull Map<String, String> httpHeaders,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
@@ -91,7 +94,7 @@ final class VideoPlayer {
       dataSourceFactory = new DefaultDataSource.Factory(context);
     }
 
-    MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context);
+    MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, context,drmURL);
 
     exoPlayer.setMediaSource(mediaSource);
     exoPlayer.prepare();
@@ -121,9 +124,9 @@ final class VideoPlayer {
     String scheme = uri.getScheme();
     return scheme.equals("http") || scheme.equals("https");
   }
-
+  private UUID drmSchemeUuid = C.WIDEVINE_UUID;
   private MediaSource buildMediaSource(
-      Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint, Context context) {
+      Uri uri, DataSource.Factory mediaDataSourceFactory, String formatHint,String drmURL, Context context) {
     int type;
     if (formatHint == null) {
       type = Util.inferContentType(uri);
@@ -146,6 +149,7 @@ final class VideoPlayer {
           break;
       }
     }
+
     switch (type) {
       case C.CONTENT_TYPE_SS:
         return new SsMediaSource.Factory(
@@ -153,10 +157,21 @@ final class VideoPlayer {
                 new DefaultDataSource.Factory(context, mediaDataSourceFactory))
             .createMediaSource(MediaItem.fromUri(uri));
       case C.CONTENT_TYPE_DASH:
+
         return new DashMediaSource.Factory(
+
                 new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                 new DefaultDataSource.Factory(context, mediaDataSourceFactory))
-            .createMediaSource(MediaItem.fromUri(uri));
+            .createMediaSource( new MediaItem.Builder()
+                    .setUri(uri)
+                    // DRM Configuration
+                    .setDrmConfiguration(
+                            new MediaItem.DrmConfiguration.Builder(drmSchemeUuid)
+                                    .setLicenseUri(drmURL).build()
+                    )
+                    .setMimeType(MimeTypes.APPLICATION_MPD)
+                    .setTag(null)
+                    .build());
       case C.CONTENT_TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));

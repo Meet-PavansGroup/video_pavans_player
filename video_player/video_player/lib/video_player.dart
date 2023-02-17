@@ -213,7 +213,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource,
+  VideoPlayerController.asset(this.dataSource, this.drmURL,
       {this.package,
       Future<ClosedCaptionFile>? closedCaptionFile,
       this.videoPlayerOptions})
@@ -222,6 +222,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         formatHint = null,
         httpHeaders = const <String, String>{},
         super(VideoPlayerValue(duration: Duration.zero));
+
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
   /// the network.
@@ -232,8 +233,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the video format detection code.
   /// [httpHeaders] option allows to specify HTTP headers
   /// for the request to the [dataSource].
+  ///
+  ///
+
+
   VideoPlayerController.network(
-    this.dataSource, {
+    this.dataSource, this.drmURL, {
     this.formatHint,
     Future<ClosedCaptionFile>? closedCaptionFile,
     this.videoPlayerOptions,
@@ -246,7 +251,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Constructs a [VideoPlayerController] playing a video from a file.
   ///
   /// This will load the file from a file:// URI constructed from [file]'s path.
-  VideoPlayerController.file(File file,
+  VideoPlayerController.file(File file, this.drmURL,
       {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
       : _closedCaptionFileFuture = closedCaptionFile,
         dataSource = Uri.file(file.absolute.path).toString(),
@@ -260,7 +265,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the video from the input content-URI.
   /// This is supported on Android only.
-  VideoPlayerController.contentUri(Uri contentUri,
+  VideoPlayerController.contentUri(Uri contentUri, this.drmURL,
       {Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
       : assert(defaultTargetPlatform == TargetPlatform.android,
             'VideoPlayerController.contentUri is only supported on Android.'),
@@ -275,6 +280,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
   final String dataSource;
+  final String drmURL;
 
   /// HTTP headers used for the request to the [dataSource].
   /// Only for [VideoPlayerController.network].
@@ -284,6 +290,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.
   final VideoFormat? formatHint;
+
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -336,6 +343,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.network,
           uri: dataSource,
+          drmUrl: drmURL,
           formatHint: formatHint,
           httpHeaders: httpHeaders,
         );
